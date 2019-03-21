@@ -18,6 +18,7 @@
  */
 package com.haotian.demo.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
 /**
@@ -47,16 +48,27 @@ public final class Sha1 {
         return buf.toString();
     }
 
-    public static String encode(String str) {
-        if (str == null) {
-            return null;
-        }
+    public static String encode(String str) throws Exception {
+        MessageDigest sha = null;
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
-            messageDigest.update(str.getBytes());
-            return getFormattedText(messageDigest.digest());
+            sha = MessageDigest.getInstance("SHA");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return "";
         }
+
+        byte[] byteArray = str.getBytes("UTF-8");
+        byte[] md5Bytes = sha.digest(byteArray);
+        StringBuffer hexValue = new StringBuffer();
+        for (int i = 0; i < md5Bytes.length; i++) {
+            int val = ((int) md5Bytes[i]) & 0xff;
+            if (val < 16) {
+                hexValue.append("0");
+            }
+            hexValue.append(Integer.toHexString(val));
+        }
+        return hexValue.toString();
+
     }
 }  
